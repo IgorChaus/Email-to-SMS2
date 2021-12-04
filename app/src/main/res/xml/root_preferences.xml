@@ -1,0 +1,52 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Настройки E-mail">
+
+        <EditTextPreference
+            android:defaultValue="alarm-parking@mail.ru"
+            app:key="email"
+            app:title="E-mail"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:defaultValue="chusya12"
+            android:key="password"
+            android:selectAllOnFocus="false"
+            android:singleLine="false"
+            android:title="Пароль"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            android:defaultValue="imap.mail.ru"
+            android:key="server"
+            android:selectAllOnFocus="false"
+            android:singleLine="false"
+            android:title="IMAP Сервер"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            android:defaultValue="995"
+            android:key="port"
+            android:selectAllOnFocus="false"
+            android:singleLine="false"
+            android:title="Порт"
+            app:useSimpleSummaryProvider="true" />
+
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Синхронизация">
+
+        <ListPreference
+            app:defaultValue="Каждый 15 минут"
+            app:entries="@array/time_interval"
+            app:entryValues="@array/time_interval"
+            app:key="time"
+            app:title="График синхронизации"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+
+
+</PreferenceScreen>
