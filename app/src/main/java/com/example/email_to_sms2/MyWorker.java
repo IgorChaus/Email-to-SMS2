@@ -1,22 +1,15 @@
 package com.example.email_to_sms2;
 
-
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
-import android.telephony.SmsManager;
 import android.text.Html;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.JobIntentService;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
+
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 import javax.mail.Address;
 import javax.mail.Flags;
@@ -29,51 +22,30 @@ import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
 
-public class MyJobIntentService extends JobIntentService {
+public class MyWorker extends Worker {
 
-    private static final int JOB_ID = 2;
-
-    // Идентификатор уведомления
-    private static final int NOTIFY_ID = 101;
-
-    // Идентификатор канала
-    private static String CHANNEL_ID = "123";
-
-    public static void enqueueWork(Context context, Intent intent) {
-        enqueueWork(context, MyJobIntentService.class, JOB_ID, intent);
+    public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+        super(context, workerParams);
     }
+
+    @NonNull
     @Override
-    protected void onHandleWork(@NonNull Intent intent) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Email to SMS", NotificationManager.IMPORTANCE_LOW);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
+    public Result doWork() {
 
 
-
-
-        String email =  intent.getStringExtra("email");
-        String password = intent.getStringExtra("password");
-        String smtp_server = intent.getStringExtra("smtp_server");
-        String port = intent.getStringExtra("port");
+        String email = getInputData().getString("email");
+        String password = getInputData().getString("password");
+        String smtp_server = getInputData().getString("smtp_server");
+        String port = getInputData().getString("port");
 
         Log.i("MyTag",email + " " + password + " " + smtp_server + " " + port);
 
         check(email, password, smtp_server, port);
-
+        return null;
     }
 
 
     void check(String user, String password, String host, String port) {
-
-        // Подготавливаем уведомление
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,CHANNEL_ID);
-        builder.setSmallIcon(R.drawable.ic_stat_sync);
-        builder.setAutoCancel(true);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
         try {
 
@@ -107,10 +79,6 @@ public class MyJobIntentService extends JobIntentService {
 
             for (int i = 0, n = messages.length; i < n; i++) {
 
-                builder.setContentTitle("Обработка сообщения: " + String.valueOf(i+1) + " из " + String.valueOf(messages.length))
-                        .setProgress(messages.length,i, false);
-                notificationManager.notify(NOTIFY_ID, builder.build());
-
                 Message message = messages[i];
 
                 Log.i("MyTag", "---------------------------------");
@@ -128,7 +96,7 @@ public class MyJobIntentService extends JobIntentService {
                 // Помечаем сообщение на удаление
                 message.setFlag(Flags.Flag.DELETED, true);
 
-                if (subject.equals("5791")){
+                if (subject.equals("1111")){
                     text = text.trim(); //Удаляем пробелы вначале и конце строки
                     int space = text.indexOf(" ");
                     String phone = text.substring(0,space);
@@ -142,11 +110,11 @@ public class MyJobIntentService extends JobIntentService {
                         phone = phone.replaceAll("[^0-9]", "");
                     }
                     Log.i("MyTag", "Phone: " + phone );
-                    
+
                     String messageText = text.substring(space).trim();
                     messageText = messageText.replace("\n", "");
                     Log.i("MyTag", "Message: " + messageText);
-    //                SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
+                    //                SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
                 }
             }
 
@@ -162,10 +130,6 @@ public class MyJobIntentService extends JobIntentService {
         } catch (Exception e) {
             Log.i("MyTag", "Неизвестная ошибка!!!", e);
         }
-        notificationManager.cancel(NOTIFY_ID);
-
 
     }
-
-
 }
