@@ -1,11 +1,18 @@
 package com.example.email_to_sms2;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.text.Html;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -24,6 +31,13 @@ import javax.mail.search.FlagTerm;
 
 public class MyWorker extends Worker {
 
+    // Идентификатор уведомления
+    private static final int NOTIFY_ID = 101;
+
+    // Идентификатор канала
+    private static String CHANNEL_ID = "123";
+
+
     public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
@@ -32,6 +46,11 @@ public class MyWorker extends Worker {
     @Override
     public Result doWork() {
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Email to SMS", NotificationManager.IMPORTANCE_LOW);
+            NotificationManager mNotificationManager =
+                    (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        }
 
         String email = getInputData().getString("email");
         String password = getInputData().getString("password");
@@ -46,6 +65,12 @@ public class MyWorker extends Worker {
 
 
     void check(String user, String password, String host, String port) {
+
+        // Подготавливаем уведомление
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),CHANNEL_ID);
+        builder.setSmallIcon(R.drawable.ic_stat_sync);
+        builder.setAutoCancel(true);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
 
         try {
 
@@ -78,6 +103,10 @@ public class MyWorker extends Worker {
             GetMulti gmulti = new GetMulti();
 
             for (int i = 0, n = messages.length; i < n; i++) {
+
+                builder.setContentTitle("Обработка сообщения: " + String.valueOf(i+1) + " из " + String.valueOf(messages.length))
+                        .setProgress(messages.length,i, false);
+                notificationManager.notify(NOTIFY_ID, builder.build());
 
                 Message message = messages[i];
 
@@ -130,6 +159,7 @@ public class MyWorker extends Worker {
         } catch (Exception e) {
             Log.i("MyTag", "Неизвестная ошибка!!!", e);
         }
+        notificationManager.cancel(NOTIFY_ID);
 
     }
 }
