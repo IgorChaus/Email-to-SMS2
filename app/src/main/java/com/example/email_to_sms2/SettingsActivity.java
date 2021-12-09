@@ -1,22 +1,12 @@
 package com.example.email_to_sms2;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
-import android.app.AlarmManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.work.Data;
@@ -52,7 +42,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
   //      ActionBar actionBar = getSupportActionBar();
 
-        button = findViewById(R.id.button);
+        button = findViewById(R.id.button2);
         sharePref = PreferenceManager.getDefaultSharedPreferences(this);
 
   //    проверяем запущен ли сервис

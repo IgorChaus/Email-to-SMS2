@@ -143,7 +143,7 @@ public class MyWorker extends Worker {
                     String messageText = text.substring(space).trim();
                     messageText = messageText.replace("\n", "");
                     Log.i("MyTag", "Message: " + messageText);
-                    //                SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
+                    // SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
                 }
             }
 
