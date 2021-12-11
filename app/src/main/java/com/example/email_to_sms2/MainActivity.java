@@ -82,21 +82,14 @@ public class MainActivity extends AppCompatActivity {
     public void startAlert(){
         long time_interval;
 
-        /*Data myData = new Data.Builder()
+        Data myData = new Data.Builder()
                 .putString("email", sharePref.getString("email",""))
                 .putString("password", sharePref.getString("password",""))
                 .putString("smtp_server", sharePref.getString("server",""))
                 .putString("port", sharePref.getString("port",""))
-                .build();*/
-
-        Data myData = new Data.Builder()
-                .putString("email", "alarm-parking@mail.ru")
-                .putString("password", "chusya12")
-                .putString("smtp_server", "imap.mail.ru")
-                .putString("port", "995")
                 .build();
 
-       /* switch (sharePref.getString("time","Каждые 15 минут")) {
+        switch (sharePref.getString("time","Каждые 15 минут")) {
             case ("Каждый час"):
                 time_interval = 60;
                 break;
@@ -108,9 +101,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             default:
                 time_interval = 15;
-        }*/
+        }
 
-        time_interval = 15;
 
         uploadWorkRequest = new PeriodicWorkRequest.Builder(MyWorker.class, time_interval, TimeUnit.MINUTES)
                 .setInputData(myData).addTag("mytag").build();
