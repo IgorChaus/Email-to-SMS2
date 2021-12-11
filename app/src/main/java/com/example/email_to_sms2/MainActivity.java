@@ -1,14 +1,18 @@
 package com.example.email_to_sms2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.work.Data;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,7 +48,22 @@ public class MainActivity extends AppCompatActivity {
             button.setText("Start");
         }
 
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void onClickButton(View view) {

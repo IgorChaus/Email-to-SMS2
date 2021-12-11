@@ -23,6 +23,12 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".SettingsActivity"
+            android:label="Настройки">
+        </activity>
+
+
     </application>
 
 </manifest>
