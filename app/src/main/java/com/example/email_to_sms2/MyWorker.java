@@ -4,7 +4,9 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.text.Html;
 import android.util.Log;
@@ -16,6 +18,10 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 
 import javax.mail.Address;
@@ -37,6 +43,7 @@ public class MyWorker extends Worker {
     // Идентификатор канала
     private static String CHANNEL_ID = "123";
 
+    DBHelper dbHelper;
 
     public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -52,6 +59,8 @@ public class MyWorker extends Worker {
                     (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         }
 
+
+
         String email = getInputData().getString("email");
         String password = getInputData().getString("password");
         String smtp_server = getInputData().getString("smtp_server");
@@ -65,6 +74,10 @@ public class MyWorker extends Worker {
 
 
     void check(String user, String password, String host, String port) {
+
+        dbHelper = new DBHelper(getApplicationContext());
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
 
         // Подготавливаем уведомление
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),CHANNEL_ID);
@@ -143,6 +156,25 @@ public class MyWorker extends Worker {
                     String messageText = text.substring(space).trim();
                     messageText = messageText.replace("\n", "");
                     Log.i("MyTag", "Message: " + messageText);
+
+                    // Текущее время
+                    Date currentDate = new Date();
+                    // Форматирование времени как "день.месяц.год"
+                    DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+                    String dateText = dateFormat.format(currentDate);
+                    // Форматирование времени как "часы:минуты:секунды"
+                    DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                    String timeText = timeFormat.format(currentDate);
+
+                    contentValues.put(DBHelper.KEY_DATATIME,dateText + " " + timeText);
+                    contentValues.put(DBHelper.KEY_TYPE, "Phone");
+                    contentValues.put(DBHelper.KEY_MESSAGE, phone + " " + messageText +  System.getProperty("line.separator"));
+
+                    database.insert(DBHelper.TABLE_MESSAGE, null, contentValues);
+
+                    Log.i("MyTag", "DataTime: " + dateText + timeText);
+
+
                     // SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
                 }
             }
@@ -151,6 +183,7 @@ public class MyWorker extends Worker {
             //      emailFolder.close(false);
             emailFolder.close(true); //Удаляем сообщения из почты
             store.close();
+            dbHelper.close();
 
         } catch (NoSuchProviderException e) {
             Log.i("MyTag", "Ошибка в NoSuchProviderException.", e);

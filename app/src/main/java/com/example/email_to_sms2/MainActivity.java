@@ -9,13 +9,17 @@ import androidx.work.WorkManager;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -26,11 +30,13 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity {
 
     Button button;
+    TextView textView;
     private EditText email, password, smtp_server, port, time;
     Boolean alarmUp;
     View view;
     SharedPreferences sharePref;
     public PeriodicWorkRequest uploadWorkRequest;
+    DBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +44,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         button = findViewById(R.id.button);
+        textView = findViewById(R.id.textView);
         sharePref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        ReadLog();
 
         //    проверяем запущен ли сервис
         alarmUp = isWorkScheduled("mytag");
@@ -68,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickButton(View view) {
         if (!alarmUp) {
+            ReadLog();
             button.setText("Stop");
             alarmUp = true;
             startAlert();
@@ -133,5 +143,28 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private void ReadLog(){
+        textView.setText("");
+        dbHelper = new DBHelper(this);
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.query(DBHelper.TABLE_MESSAGE, null, null, null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            int datatimeIndex = cursor.getColumnIndex(DBHelper.KEY_DATATIME);
+            int typeIndex = cursor.getColumnIndex(DBHelper.KEY_TYPE);
+            int messageIndex = cursor.getColumnIndex(DBHelper.KEY_MESSAGE);
+            do {
+                textView.append(cursor.getString(datatimeIndex)+ " " +
+                        cursor.getString(messageIndex));
+
+            } while (cursor.moveToNext());
+        } else
+            textView.setText("Таблица логов пустая");
+
+        cursor.close();
+        dbHelper.close();
+
     }
 }
