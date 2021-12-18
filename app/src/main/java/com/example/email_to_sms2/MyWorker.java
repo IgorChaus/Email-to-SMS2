@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.lifecycle.MutableLiveData;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -58,7 +59,6 @@ public class MyWorker extends Worker {
             NotificationManager mNotificationManager =
                     (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         }
-
 
 
         String email = getInputData().getString("email");
@@ -172,8 +172,9 @@ public class MyWorker extends Worker {
 
                     database.insert(DBHelper.TABLE_MESSAGE, null, contentValues);
 
-                    Log.i("MyTag", "DataTime: " + dateText + timeText);
+                    DataRepository.updateText(System.getProperty("line.separator") + dateText + " " + timeText + " " + phone + " " + messageText +  System.getProperty("line.separator"));
 
+                    Log.i("MyTag", "DataTime: " + dateText + timeText);
 
                     // SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
                 }

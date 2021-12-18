@@ -1,7 +1,12 @@
 package com.example.email_to_sms2;
 
+import static com.example.email_to_sms2.DBHelper.KEY_ID;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.work.Data;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
@@ -49,6 +54,18 @@ public class MainActivity extends AppCompatActivity {
 
         ReadLog();
 
+        DataRepository.getData().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if (textView.getText().toString() == "Таблица логов пустая") {
+                    textView.setText(s);
+                }else {
+                    textView.append(s);
+                }
+            }
+
+        });
+
         //    проверяем запущен ли сервис
         alarmUp = isWorkScheduled("mytag");
         if (alarmUp == true) {
@@ -56,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             button.setText("Start");
         }
+
 
     }
 
@@ -76,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickButton(View view) {
+
         if (!alarmUp) {
             ReadLog();
             button.setText("Stop");
@@ -149,17 +168,19 @@ public class MainActivity extends AppCompatActivity {
         textView.setText("");
         dbHelper = new DBHelper(this);
         SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.query(DBHelper.TABLE_MESSAGE, null, null, null, null, null, null);
+//        Cursor cursor = database.query(DBHelper.TABLE_MESSAGE, null, null, null, null, null, null);
+        Cursor cursor = database.query(DBHelper.TABLE_MESSAGE, null, null, null, null, null, KEY_ID + " DESC","3");
 
-        if (cursor.moveToFirst()) {
+        if (cursor.moveToLast()) {
+            int bd_id = cursor.getColumnIndex(KEY_ID);
             int datatimeIndex = cursor.getColumnIndex(DBHelper.KEY_DATATIME);
             int typeIndex = cursor.getColumnIndex(DBHelper.KEY_TYPE);
             int messageIndex = cursor.getColumnIndex(DBHelper.KEY_MESSAGE);
             do {
-                textView.append(cursor.getString(datatimeIndex)+ " " +
-                        cursor.getString(messageIndex));
+                textView.append(cursor.getString(bd_id) + " " + cursor.getString(datatimeIndex)+ " " +
+                        cursor.getString(messageIndex) + System.getProperty("line.separator"));
 
-            } while (cursor.moveToNext());
+            } while (cursor.moveToPrevious());
         } else
             textView.setText("Таблица логов пустая");
 
