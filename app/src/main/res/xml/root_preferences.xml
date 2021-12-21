@@ -5,6 +5,7 @@
 
         <EditTextPreference
             android:defaultValue="alarm-parking@mail.ru"
+            android:title="E-mail"
             app:key="email"
             app:title="E-mail"
             app:useSimpleSummaryProvider="true" />
@@ -38,11 +39,37 @@
     <PreferenceCategory app:title="Синхронизация">
 
         <ListPreference
-            app:defaultValue="Каждый 15 минут"
+            android:title="График синхронизации"
+            app:defaultValue="Каждые 15 минут"
             app:entries="@array/time_interval"
             app:entryValues="@array/time_interval"
             app:key="time"
             app:title="График синхронизации"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:title="Сообщения без токена"
+            app:defaultValue="Помечать прочитанными"
+            app:entries="@array/message_notoken"
+            app:entryValues="@array/message_notoken"
+            app:key="message_action"
+            app:title="Сообщения без токена"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:defaultValue="1111"
+            android:key="token"
+            android:selectAllOnFocus="false"
+            android:singleLine="false"
+            android:title="Токен"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:defaultValue="10"
+            android:key="len_log"
+            android:selectAllOnFocus="false"
+            android:singleLine="false"
+            android:title="Максимальное количество записей в логе"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>

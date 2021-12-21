@@ -65,15 +65,16 @@ public class MyWorker extends Worker {
         String password = getInputData().getString("password");
         String smtp_server = getInputData().getString("smtp_server");
         String port = getInputData().getString("port");
+        String message_action = getInputData().getString("message_action");
+        String token = getInputData().getString("token");
 
         Log.i("MyTag",email + " " + password + " " + smtp_server + " " + port);
 
-        check(email, password, smtp_server, port);
+        check(email, password, smtp_server, port, token, message_action);
         return null;
     }
 
-
-    void check(String user, String password, String host, String port) {
+    void check(String user, String password, String host, String port, String token, String message_action) {
 
         dbHelper = new DBHelper(getApplicationContext());
         SQLiteDatabase database = dbHelper.getWritableDatabase();
@@ -134,11 +135,15 @@ public class MyWorker extends Worker {
 
                 String text = Html.fromHtml(gmulti.getText(message)).toString();
                 Log.i("MyTag", "Text: " + text);
+                Log.i("MyTag", "Сообщение: " + text);
 
-                // Помечаем сообщение на удаление
-                message.setFlag(Flags.Flag.DELETED, true);
+                if (message_action.equals("Удалять")) {
+                    message.setFlag(Flags.Flag.DELETED, true);
+                }else{
+                    message.setFlag(Flags.Flag.SEEN, true);
+                }
 
-                if (subject.equals("1111")){
+                if (subject.equals(token)){
                     text = text.trim(); //Удаляем пробелы вначале и конце строки
                     int space = text.indexOf(" ");
                     String phone = text.substring(0,space);
