@@ -8,6 +8,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.telephony.SmsManager;
 import android.text.Html;
 import android.util.Log;
 
@@ -70,6 +71,15 @@ public class MyWorker extends Worker {
 
         Log.i("MyTag",email + " " + password + " " + smtp_server + " " + port);
 
+        // Текущее время
+        Date currentDate = new Date();
+        // Форматирование времени как "день.месяц.год"
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+        String dateText = dateFormat.format(currentDate);
+        // Форматирование времени как "часы:минуты:секунды"
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        String timeText = timeFormat.format(currentDate);
+        DataLastCheck.updateText("Последняя проверка была " + dateText + " в " + timeText);
         check(email, password, smtp_server, port, token, message_action);
         return null;
     }
