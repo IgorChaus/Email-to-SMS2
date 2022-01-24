@@ -32,6 +32,7 @@ import android.telephony.SmsManager;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -119,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         DataRepository.getData().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
+                textView.setGravity(Gravity.BOTTOM| Gravity.LEFT);
                 if (textView.getText().toString() == "Таблица логов пустая") {
                     textView.setText(s);
                 }else {
@@ -250,7 +252,8 @@ public class MainActivity extends AppCompatActivity {
                     SQLiteDatabase db = dbHelper.getReadableDatabase();
                     db.delete(DBHelper.TABLE_MESSAGE, null, null);
 
-                    textView.setText("");
+                    textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+                    textView.setText("Таблица логов пустая");
             }
         });
         builder.show();
@@ -267,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
         // Форматирование времени как "часы:минуты:секунды"
         timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         timeText = timeFormat.format(currentDate);
-        DataLastCheck.updateText("Последняя проверка была " + dateText + " в " + timeText);
+        DataLastCheck.updateText("Последняя проверка была:\n" + dateText + " в " + timeText);
 
         dbHelper = new DBHelper(getApplicationContext());
         SQLiteDatabase database = dbHelper.getWritableDatabase();
@@ -304,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
             Message[] messages = emailFolder.search(ft);
 
             //   System.out.println("messages.length---" + messages.length);
-            DataRepository.updateText(System.getProperty("line.separator") + "Сообщений в ящике:" + messages.length + System.getProperty("line.separator"));
+            DataRepository.updateText(System.getProperty("line.separator") + "Сообщений в ящике: " + messages.length + System.getProperty("line.separator"));
 
             GetMulti gmulti = new GetMulti();
 
@@ -489,6 +492,7 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = database.query(DBHelper.TABLE_MESSAGE, null, null, null, null, null, KEY_ID + " DESC",len_log);
 
         if (cursor.moveToLast()) {
+            textView.setGravity(Gravity.BOTTOM| Gravity.LEFT);
             int datatimeIndex = cursor.getColumnIndex(DBHelper.KEY_DATATIME);
             int typeIndex = cursor.getColumnIndex(DBHelper.KEY_TYPE);
             int messageIndex = cursor.getColumnIndex(DBHelper.KEY_MESSAGE);
@@ -498,6 +502,7 @@ public class MainActivity extends AppCompatActivity {
 
             } while (cursor.moveToPrevious());
         } else
+            textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
             textView.setText("Таблица логов пустая");
 
         cursor.close();

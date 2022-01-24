@@ -79,7 +79,7 @@ public class MyWorker extends Worker {
         // Форматирование времени как "часы:минуты:секунды"
         DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         String timeText = timeFormat.format(currentDate);
-        DataLastCheck.updateText("Последняя проверка была " + dateText + " в " + timeText);
+        DataLastCheck.updateText("Последняя проверка была:\n" + dateText + " в " + timeText);
         check(email, password, smtp_server, port, token, message_action);
         return null;
     }
@@ -122,7 +122,7 @@ public class MyWorker extends Worker {
             Message[] messages = emailFolder.search(ft);
 
             //   System.out.println("messages.length---" + messages.length);
-            Log.i("MyTag", "Сообщений в ящике:" + messages.length);
+            Log.i("MyTag", "Сообщений в ящике: " + messages.length);
 
             GetMulti gmulti = new GetMulti();
 
@@ -191,7 +191,7 @@ public class MyWorker extends Worker {
 
                     Log.i("MyTag", "DataTime: " + dateText + timeText);
 
-                    // SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
+                   // SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
                 }
             }
 
