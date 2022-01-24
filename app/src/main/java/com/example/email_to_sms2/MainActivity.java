@@ -375,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Log.i("MyTag", "DataTime: " + dateText + timeText);
 
-                   // SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
+                    SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
                 }
             }
 

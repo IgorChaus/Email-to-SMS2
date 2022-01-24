@@ -38,6 +38,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
 
 public class MyWorker extends Worker {
+    private Context context;
 
     // Идентификатор уведомления
     private static final int NOTIFY_ID = 101;
@@ -49,6 +50,7 @@ public class MyWorker extends Worker {
 
     public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        this.context = context;
     }
 
     @NonNull
@@ -58,7 +60,7 @@ public class MyWorker extends Worker {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Email to SMS", NotificationManager.IMPORTANCE_LOW);
             NotificationManager mNotificationManager =
-                    (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         }
 
 
@@ -86,15 +88,15 @@ public class MyWorker extends Worker {
 
     void check(String user, String password, String host, String port, String token, String message_action) {
 
-        dbHelper = new DBHelper(getApplicationContext());
+        dbHelper = new DBHelper(context);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
         // Подготавливаем уведомление
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),CHANNEL_ID);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,CHANNEL_ID);
         builder.setSmallIcon(R.drawable.ic_stat_sync);
         builder.setAutoCancel(true);
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
         try {
 
@@ -191,7 +193,7 @@ public class MyWorker extends Worker {
 
                     Log.i("MyTag", "DataTime: " + dateText + timeText);
 
-                   // SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
+                    SmsManager.getDefault().sendTextMessage(phone, null, messageText, null, null);
                 }
             }
 
